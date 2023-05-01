@@ -61,7 +61,7 @@ def operation(data, key):
 
 def encrypt(image_lstf, keyf2, pathf2):
     file_name = os.path.basename(pathf2)
-    encrypt_save_file = open('encrypt_save_file.txt', 'r')
+    encrypt_save_file = open('.encrypt_save_file.txt', 'r')
     file_names = encrypt_save_file.readlines()
     remove_next_line(file_names)
 
@@ -71,7 +71,7 @@ def encrypt(image_lstf, keyf2, pathf2):
             encrypt_save_file.close()
             return
     encrypt_save_file.close()
-    encrypt_save_file = open('encrypt_save_file.txt', 'a')
+    encrypt_save_file = open('.encrypt_save_file.txt', 'a')
     encrypt_save_file.write(file_name + '\n')
     encrypt_save_file.write(keyf2)
     encrypt_save_file.close()
@@ -86,7 +86,7 @@ def encrypt(image_lstf, keyf2, pathf2):
 
 def decrypt(image_lstf2, pathf3):
     file_name2 = os.path.basename(pathf3)
-    encrypt_save_file2 = open('encrypt_save_file.txt', 'r')
+    encrypt_save_file2 = open('.encrypt_save_file.txt', 'r')
     file_names2 = encrypt_save_file2.readlines()
     remove_next_line(file_names2)
     fcount = 1
@@ -101,16 +101,16 @@ def decrypt(image_lstf2, pathf3):
     encrypt_save_file2.close()
     print(fcount)
     if fcount == 0:
-        encrypt_save_file2 = open('encrypt_save_file.txt', 'r')
+        encrypt_save_file2 = open('.encrypt_save_file.txt', 'r')
         lines = encrypt_save_file2.readlines()
         encrypt_save_file2.close()
-        encrypt_save_file2 = open('encrypt_save_file.txt', 'w')
+        encrypt_save_file2 = open('.encrypt_save_file.txt', 'w')
         for i in lines:
             if lines.index(i) != delete_index:
                 encrypt_save_file2.write(i)
                 encrypt_save_file2.write(i)
         encrypt_save_file2.close()
-        encrypt_save_file2 = open('encrypt_save_file.txt', 'a')
+        encrypt_save_file2 = open('.encrypt_save_file.txt', 'a')
         encrypt_save_file2.write(file_name2)
         encrypt_save_file2.write(keyf3)
         encrypt_save_file2.close()
@@ -152,7 +152,7 @@ def decryption_mode():
 
 def driver_func():
     ch = 'y'
-    save_file = open('encrypt_save_file.txt', 'w')
+    save_file = open('.encrypt_save_file.txt', 'w')
     save_file.close()
     while ch.lower() != 'n':
         e_or_d = input("Type 1 for encryption and 2 for decryption: ")
