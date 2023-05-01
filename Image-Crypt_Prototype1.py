@@ -16,6 +16,7 @@ from time import sleep
    2:36 PM
    better encryption has been added. it is still using a symmetric key, But the key can no longer be brute forced.
    I need to find a way to hide the file that stores the names and keys for files 
+   
 """
 
 
@@ -48,7 +49,6 @@ def get_image(pathf):  # to open file and get a bytearray
 def remove_next_line(data):
     for i in data:
         data[data.index(i)] = i.replace('\n', '')
-        print(i)
 
 
 def operation(data, key):
@@ -73,7 +73,7 @@ def encrypt(image_lstf, keyf2, pathf2):
     encrypt_save_file.close()
     encrypt_save_file = open('.encrypt_save_file.txt', 'a')
     encrypt_save_file.write(file_name + '\n')
-    encrypt_save_file.write(keyf2)
+    encrypt_save_file.write(keyf2 + '\n')
     encrypt_save_file.close()
 
     operation(image_lstf, keyf2)
@@ -92,28 +92,25 @@ def decrypt(image_lstf2, pathf3):
     fcount = 1
 
     for i in file_names2:
-        print(i)
-        print(file_name2)
         if file_name2 == i:
             keyf3 = file_names2[file_names2.index(i) + 1]
             delete_index = file_names2.index(i)
+            s_delete_index = delete_index + 1
             fcount = 0
     encrypt_save_file2.close()
-    print(fcount)
+
     if fcount == 0:
         encrypt_save_file2 = open('.encrypt_save_file.txt', 'r')
         lines = encrypt_save_file2.readlines()
         encrypt_save_file2.close()
         encrypt_save_file2 = open('.encrypt_save_file.txt', 'w')
-        for i in lines:
-            if lines.index(i) != delete_index:
-                encrypt_save_file2.write(i)
-                encrypt_save_file2.write(i)
+
+        del lines[delete_index-1]
+        del lines[delete_index-1]
+        encrypt_save_file2.writelines(lines)
+
         encrypt_save_file2.close()
-        encrypt_save_file2 = open('.encrypt_save_file.txt', 'a')
-        encrypt_save_file2.write(file_name2)
-        encrypt_save_file2.write(keyf3)
-        encrypt_save_file2.close()
+
 
         operation(image_lstf2, keyf3)
 
@@ -152,8 +149,9 @@ def decryption_mode():
 
 def driver_func():
     ch = 'y'
-    save_file = open('.encrypt_save_file.txt', 'w')
-    save_file.close()
+    if not os.path.exists('.encrypt_save_file.txt'):
+        save_file = open('.encrypt_save_file.txt', 'w')
+        save_file.close()
     while ch.lower() != 'n':
         e_or_d = input("Type 1 for encryption and 2 for decryption: ")
         if e_or_d == '1':
