@@ -1,4 +1,5 @@
 import os
+import random
 from time import sleep
 
 """May 1 
@@ -7,7 +8,23 @@ from time import sleep
    10:35 AM
    Prototype 1 is Complete! the encryption is very weak and consists of only an XOR operation.
    I will research and think of better encryption.
+   (After this the first commit was made)
+   11:16 AM
+   I have done some research and have realised that it will be better if we generate a key ourselves 
+   and then encrypt the file. The only problem is storing the key safely so that we can decrypt it later.
+   This will also include maintaining a list of encrypted files.
+   2:36 PM
+   better encryption has been added. it is still using a symmetric key, But the key can no longer be brute forced.
+   I need to find a way to hide the file that stores the names and keys for files 
 """
+
+
+def generate_key():
+    chars = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ]
+    key_A = ''
+    for i in range(25):
+        key_A += random.choice(chars)
+    return key_A
 
 
 def get_key():
@@ -21,49 +38,122 @@ def get_path():
 
 
 def get_image(pathf):  # to open file and get a bytearray
-    fileR = open(pathf, 'rb') #In 'FileR', 'R' stands for read and 'f' in 'pathf' is for function
+    fileR = open(pathf, 'rb')  # In 'FileR', 'R' stands for read and 'f' in 'pathf' is for function
     image_file = fileR.read()
     barr = bytearray(image_file)
     fileR.close()
     return barr
 
 
-def encrypt_or_decrypt(image_lstf, keyf2, pathf2):
-    for index, values in enumerate(image_lstf):
-        image_lstf[index] = values ^ keyf2
+def remove_next_line(data):
+    for i in data:
+        data[data.index(i)] = i.replace('\n', '')
+        print(i)
+
+
+def operation(data, key):
+    j = 0
+    for index, values in enumerate(data):
+        while (j < 25):
+            data[index] = values ^ int(key[j])
+            j += 1
+
+
+def encrypt(image_lstf, keyf2, pathf2):
+    file_name = os.path.basename(pathf2)
+    encrypt_save_file = open('encrypt_save_file.txt', 'r')
+    file_names = encrypt_save_file.readlines()
+    remove_next_line(file_names)
+
+    for i in file_names:
+        if file_name == i:
+            print("file has already been encrypted!")
+            encrypt_save_file.close()
+            return
+    encrypt_save_file.close()
+    encrypt_save_file = open('encrypt_save_file.txt', 'a')
+    encrypt_save_file.write(file_name + '\n')
+    encrypt_save_file.write(keyf2)
+    encrypt_save_file.close()
+
+    operation(image_lstf, keyf2)
+
     fileW = open(pathf2, 'wb')
     fileW.write(image_lstf)
     fileW.close()
     return
 
 
+def decrypt(image_lstf2, pathf3):
+    file_name2 = os.path.basename(pathf3)
+    encrypt_save_file2 = open('encrypt_save_file.txt', 'r')
+    file_names2 = encrypt_save_file2.readlines()
+    remove_next_line(file_names2)
+    fcount = 1
+
+    for i in file_names2:
+        print(i)
+        print(file_name2)
+        if file_name2 == i:
+            keyf3 = file_names2[file_names2.index(i) + 1]
+            delete_index = file_names2.index(i)
+            fcount = 0
+    encrypt_save_file2.close()
+    print(fcount)
+    if fcount == 0:
+        encrypt_save_file2 = open('encrypt_save_file.txt', 'r')
+        lines = encrypt_save_file2.readlines()
+        encrypt_save_file2.close()
+        encrypt_save_file2 = open('encrypt_save_file.txt', 'w')
+        for i in lines:
+            if lines.index(i) != delete_index:
+                encrypt_save_file2.write(i)
+                encrypt_save_file2.write(i)
+        encrypt_save_file2.close()
+        encrypt_save_file2 = open('encrypt_save_file.txt', 'a')
+        encrypt_save_file2.write(file_name2)
+        encrypt_save_file2.write(keyf3)
+        encrypt_save_file2.close()
+
+        operation(image_lstf2, keyf3)
+
+        fileW = open(pathf3, 'wb')
+        fileW.write(image_lstf2)
+        fileW.close()
+        print("decryption complete.")
+    else:
+        print("File has not been encrypted!")
+    return
+
 
 def encryption_mode():
     path = get_path()
-    if not os.path.exists(path):  # Edge case 1
+    if not os.path.exists(path):
         print("File not found!")
     else:
-        key = get_key()
+        key = generate_key()
         image_lst = get_image(path)
         print("Encrypting...")
         sleep(1)
-        encrypt_or_decrypt(image_lst, key, path)
+        encrypt(image_lst, key, path)
         print("Encryption complete.")
+
 
 def decryption_mode():
     path = get_path()
-    if not os.path.exists(path):  # Edge case 1
+    if not os.path.exists(path):
         print("File not found!")
     else:
-        key = get_key()
         image_lst = get_image(path)
         print("decrypting...")
         sleep(1)
-        encrypt_or_decrypt(image_lst, key, path)
-        print("decryption complete.")
+        decrypt(image_lst, path)
+
 
 def driver_func():
     ch = 'y'
+    save_file = open('encrypt_save_file.txt', 'w')
+    save_file.close()
     while ch.lower() != 'n':
         e_or_d = input("Type 1 for encryption and 2 for decryption: ")
         if e_or_d == '1':
