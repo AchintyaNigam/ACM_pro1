@@ -20,7 +20,7 @@ I hope you like it!
   - if the file is found it will start decrypting and if the file is **not** found, then it will display that file was not found
   - then it will ask you if you want to continue. entering y/Y will take you back to the menu and n/N will end the program
   - if the file was not encryppted it will display the same and ask you if you want to continue.
-  - after descryption has completed, the program will ask if you want to continue.
+  - after decryption has completed, the program will ask if you want to continue.
  
 ---
 
