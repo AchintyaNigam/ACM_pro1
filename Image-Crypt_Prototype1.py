@@ -53,10 +53,15 @@ def remove_next_line(data):
 
 def operation(data, key):
     j = 0
+    i = 0
     for index, values in enumerate(data):
-        while (j < 25):
             data[index] = values ^ int(key[j])
-            j += 1
+            if(j == 24 and i != (len(data)-1)):
+                j = 0
+                j += 1
+            else:
+                j += 1
+                i += 1
 
 
 def encrypt(image_lstf, keyf2, pathf2):
